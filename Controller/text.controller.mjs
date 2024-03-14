@@ -291,7 +291,7 @@ api.onText(/🪂 Referral$/, async (msg) => {
                     [
                         
                         { text: "Share To Whatsapp", url: `https://api.whatsapp.com/send?text=${text1}` },
-                        { text: "Sahre To Facebook", url: `https://facebook.com/sharer/sharer.php?u=${text1}` }
+                        { text: "Share To Facebook", url: `https://facebook.com/sharer/sharer.php?u=${text1}` }
                     ],
                     [
                         { text: "Share To Twitter", url: `https://twitter.com/intent/tweet?text=${text1}`}
