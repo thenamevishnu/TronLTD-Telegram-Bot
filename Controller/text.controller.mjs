@@ -274,9 +274,25 @@ api.onText(/🪂 Referral$/, async (msg) => {
         const user = await userDB.findOne({ _id: chat.id })
         const invites = user.invites
         const text = `<b><i>✅ Every verified referral you will get ${botConfig.amount.commission} ${botConfig.currency}</i>\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
+        const text1 = `✅ Every verified referral you will get ${botConfig.amount.commission} ${botConfig.currency}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
-            protect_content: isProtected
+            protect_content: isProtected,
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: "Share To Telegram", url: `https://t.me/share/url?url=${text1}` }
+                    ],
+                    [
+                        
+                        { text: "Share To Whatsapp", url: `https://api.whatsapp.com/send?text=${text1}` },
+                        { text: "Sahre To Facebook", url: `https://facebook.com/sharer/sharer.php?u=${text1}` }
+                    ],
+                    [
+                        { text: "Share To Twitter", url: `https://twitter.com/intent/tweet?text=${text1}`}
+                    ]
+                ]
+            }
         })
     } catch (err) {
         return console.log(err.message)

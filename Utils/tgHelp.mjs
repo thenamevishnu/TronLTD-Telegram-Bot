@@ -2,7 +2,7 @@ import { botConfig } from "../Config/Bot.mjs"
 import { userDB } from "../Models/user.model.mjs"
 import { v4 as uuidv4 } from "uuid"
 
-export const isProtected = false
+export const isProtected = true
 
 export const answerCallback = {}
 export const answerStore = {}
