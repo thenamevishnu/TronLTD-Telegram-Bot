@@ -49,6 +49,11 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                         invites: 1
                     }
                 })
+                const userCount = await userDB.countDocuments()
+                const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>${inviter === botConfig.adminId ? `\n☄️ InvitedBy: You` : ""}</b>`
+                await api.sendMessage(botConfig.adminId, txt, {
+                    parse_mode: "HTML"
+                })
             }
         }
         const text = `<b>🏡 Main Menu</b>`

@@ -14,7 +14,7 @@ api.on("message", async (msg) => {
 
     const check = await userDB.findOne({ _id: chat.id }, { account_status: 1 })
     
-    if (!check.account_status) {
+    if (!check?.account_status) {
         await api.sendMessage(chat.id, `<i>🦉 Active your account by one time safety deposit\n\n✅ Benifit: ${botConfig.amount.commission} ${botConfig.currency} per refer and minimum payout ${botConfig.amount.withdraw} ${botConfig.currency}\n\n💵 Refer one, Withdraw instantly.\n\n⚠️ This message will be disabled after account activated!</i>`, {
             parse_mode: "HTML",
             protect_content: isProtected
