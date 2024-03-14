@@ -9,6 +9,7 @@ dotenv.config()
 
 api.on("message", async (msg) => {
     const chat = msg.chat
+    if (chat.type !== "private") return 
     const callback = answerCallback[chat.id]
 
     const check = await userDB.findOne({ _id: chat.id }, { account_status: 1 })

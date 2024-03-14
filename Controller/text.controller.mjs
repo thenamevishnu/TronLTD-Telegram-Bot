@@ -12,6 +12,7 @@ dotenv.config()
 api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({
             _id: chat.id
         })
@@ -67,6 +68,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
 api.onText(/💶 You have: /, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const text = `<b><u>💰 Account Balance</u>\n\n💶 Available Balance: <code>${user.balance.balance.toFixed(4)} ${botConfig.currency}</code>\n💵 Referral Balance: <code>${user.balance.referrals.toFixed(4)} ${botConfig.currency}</code>\n💷 Payout Balance: <code>${user.balance.payouts.toFixed(4)} ${botConfig.currency}</code></b>`
         return await api.sendMessage(chat.id, text, {
@@ -85,6 +87,7 @@ api.onText(/💶 You have: /, async (msg) => {
 api.onText(/🎁 Gift$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const next_gift = user.next_gift
         const currentTime = Math.floor(new Date().getTime() / 1000)
@@ -118,6 +121,7 @@ api.onText(/🎁 Gift$/, async (msg) => {
 api.onText(/📟 Calculator$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const text = `<i>📟 Enter the number of referrals</i>`
         answerCallback[chat.id] = "calculator"
         return await api.sendMessage(chat.id, text, {
@@ -136,6 +140,7 @@ api.onText(/📟 Calculator$/, async (msg) => {
 api.onText(/📊 Bot Status$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const info = await userDB.aggregate([
             {
                 $group: {
@@ -166,6 +171,7 @@ api.onText(/📊 Bot Status$/, async (msg) => {
 api.onText(/📥 Deposit$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         if (user.account_status) {
             return await api.sendMessage(chat.id, `<i>✅ You're already an active user</i>`, {
@@ -206,6 +212,7 @@ api.onText(/📥 Deposit$/, async (msg) => {
 api.onText(/📤 Payout$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const balance = user.balance.balance
         if (!user.wallet) {
@@ -240,6 +247,7 @@ api.onText(/📤 Payout$/, async (msg) => {
 api.onText(/⚙️ Settings$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const wallet = user.wallet
         const text = `<b>💹 ${botConfig.currency}: <code>${wallet || `Not Set`}</code>\n\n⚠️ <i>This wallet will be used for future withdrawals</i></b>`
@@ -262,6 +270,7 @@ api.onText(/⚙️ Settings$/, async (msg) => {
 api.onText(/🪂 Referral$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const invites = user.invites
         const text = `<b><i>✅ Every verified referral you will get ${botConfig.amount.commission} ${botConfig.currency}</i>\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
@@ -277,6 +286,7 @@ api.onText(/🪂 Referral$/, async (msg) => {
 api.onText(/📃 History$/, async (msg) => {
     try {
         const chat = msg.chat
+        if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const invites = user.invites
         const history = await paymentDB.find({ user_id: chat.id }).limit(5)
