@@ -21,19 +21,34 @@ const user = new Schema({
     invites: {
         type: Number  
     },
+    account_status: {
+        type: Boolean,
+        default: false
+    },
     balance: {
         deposits: {
-            type: Number
+            type: Number,
+            default: 0
         },
         balance: {
-            type: Number
-        },
-        investments: {
-            type: Number
+            type: Number,
+            default: 0
         },
         referrals: {
-            type: Number
+            type: Number,
+            default: 0
+        },
+        payouts: {
+            type: Number,
+            default: 0
         }
+    },
+    next_gift: {
+        type: Number,
+        default: 0
+    },
+    wallet: {
+        type: String
     }
 }, {
     timestamps: true

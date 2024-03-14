@@ -4,7 +4,10 @@ import * as db from "./Config/Database.mjs"
 import cronJob from "node-cron"
 import axios from "axios"
 import serverRoute from "./Routes/server.route.mjs"
-import "./Routes/tg.route.mjs"
+import paymentRoute from "./Routes/payment.route.mjs"
+import "./Controller/text.controller.mjs"
+import "./Controller/message.controller.mjs"
+import "./Controller/callback.controller.mjs"
 
 env.config()
 db.dbConnect()
@@ -22,6 +25,7 @@ cronJob.schedule("* * * * *", async () => {
 app.use(express.json())
 
 app.use("/", serverRoute)
+app.use("/payment", paymentRoute)
 
 app.listen(4001, () => {
     console.log("Server started!")
