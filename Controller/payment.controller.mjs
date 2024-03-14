@@ -4,6 +4,7 @@ import { paymentDB } from "../Models/payment.model.mjs"
 import { userDB } from "../Models/user.model.mjs"
 import { botConfig } from "../Config/Bot.mjs"
 import api from "../Config/Telegram.mjs"
+import { isProtected } from "../Utils/tgHelp.mjs"
 
 dotenv.config()
 
@@ -19,7 +20,7 @@ const paymentCallback = async (req, res) => {
             const trackId = Number(postData.trackId)
             const payments = await paymentDB.findOne({ trackId: trackId})
             if (postData.type === "payment") {
-                if (!payments && paymentStatus === "Waiting") {
+                if (!payments && paymentStatus === "Paid") {
                     const response = await paymentDB.create({
                         user_id: userId,
                         type: postData.type,
@@ -52,7 +53,10 @@ const paymentCallback = async (req, res) => {
                                 "balance.referrals": botConfig.amount.commission
                             }
                         })
-                        await api.sendMessage(userId, `<b>✅ Payment is confirmed by the network.</b>`)
+                        await api.sendMessage(userId, `<b>✅ Payment is confirmed by the network.</b>`, {
+                            parse_mode: "HTML",
+                            protect_content: isProtected
+                        })
                     }
                 }
             } else if (postData.type === "payout") {
@@ -69,7 +73,10 @@ const paymentCallback = async (req, res) => {
                         status: postData.status
                     })
                     if (response._id) {
-                        await api.sendMessage(userId, `<b>✅ Payout is confirmed by the network.</b>`)
+                        await api.sendMessage(userId, `<b>✅ Payout is confirmed by the network.</b>`, {
+                            parse_mode: "HTML",
+                            protect_content: isProtected
+                        })
                     }
                 } 
             }
