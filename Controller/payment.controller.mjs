@@ -19,7 +19,7 @@ const paymentCallback = async (req, res) => {
             const trackId = Number(postData.trackId)
             const payments = await paymentDB.findOne({ trackId: trackId})
             if (postData.type === "payment") {
-                if (!payments && paymentStatus === "Paid") {
+                if (!payments && paymentStatus === "Waiting") {
                     const response = await paymentDB.create({
                         user_id: userId,
                         type: postData.type,
