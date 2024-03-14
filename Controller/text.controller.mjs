@@ -153,7 +153,7 @@ api.onText(/📊 Bot Status$/, async (msg) => {
             }
         ])
         const response = info[0]
-        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n💶 Total Earned: <code>${response.totalEarned} ${botConfig.currency}</code>\n💷 Total Payouts: <code>${response.totalPayouts} ${botConfig.currency}</code>\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
+        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n💶 Total Earned: <code>${response.totalEarned} ${botConfig.currency}</code>\n💷 Total Payouts: <code>${response.totalPayouts} ${botConfig.currency}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected
