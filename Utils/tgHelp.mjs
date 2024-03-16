@@ -6,6 +6,7 @@ export const isProtected = true
 
 export const answerCallback = {}
 export const answerStore = {}
+export const inviterStore = {}
 
 export const uuid = () => uuidv4()
 

@@ -3,7 +3,7 @@ import api from "../Config/Telegram.mjs";
 import { paymentDB } from "../Models/payment.model.mjs";
 import { userDB } from "../Models/user.model.mjs";
 import { createPaymentLink } from "../Utils/oxaPay.mjs";
-import { answerCallback, isProtected, keys, userMention, uuid } from "../Utils/tgHelp.mjs";
+import { answerCallback, inviterStore, isProtected, keys, userMention, uuid } from "../Utils/tgHelp.mjs";
 import dotenv from "dotenv"
 import ShortUniqueId from "short-unique-id";
 
@@ -16,45 +16,49 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
         const user = await userDB.findOne({
             _id: chat.id
         })
+        let referType;
         if (!user) {
-            let inviter = match?.[1] || null
-            if (inviter) {
-                if (isNaN(inviter) || chat.id == inviter) {
+            inviterStore[chat.id] = match?.[1] || null
+            if (inviterStore[chat.id]) {
+                if (isNaN(inviterStore[chat.id]) || chat.id == inviterStore[chat.id]) {
                     return await api.sendMessage(chat.id, `<i>❌ Invalid inviter!</i>`, {
                         parse_mode: "HTML",
                         protect_content: isProtected
                     })
                 }
                 const userCheck = await userDB.findOne({
-                    _id: inviter
+                    _id: inviterStore[chat.id]
                 })
                 if (!userCheck) {
-                    inviter = botConfig.adminId
+                    inviterStore[chat.id] = botConfig.adminId
                 }
+                referType = `🚀 New user joined using your referral link.`
             } else {
-                inviter = botConfig.adminId
+                const userList = await userDB.find({ account_status: true })
+                inviterStore[chat.id] = userList[Math.floor(Math.random() * userList.length)]?._id
+                referType = `✨ New user joined through auto filling.`
             }
             const response = await userDB.create({
                 _id: chat.id,
                 first_name: chat.first_name,
                 last_name: chat.last_name,
                 username: chat.username,
-                invited_by: inviter
+                invited_by: inviterStore[chat.id]
             })
             if (response._id) {
                 await userDB.updateOne({
-                    _id: inviter
+                    _id: inviterStore[chat.id]
                 }, {
                     $inc: {
                         invites: 1
                     }
                 })
-                await api.sendMessage(inviter, `<i>🚀 New user joined using your referral link. \n✅ You'll get ${botConfig.amount.commission} ${botConfig.currency} when they activate their account (Only if your account is activated).</i>`, {
+                await api.sendMessage(inviterStore[chat.id], `<i>${referType}\n✅ You'll get ${botConfig.amount.commission} ${botConfig.currency} when they activate their account (Only if your account is activated).</i>`, {
                     parse_mode: "HTML",
                     protect_content: isProtected
                 })
                 const userCount = await userDB.countDocuments()
-                const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>${inviter === botConfig.adminId ? `\n☄️ InvitedBy: You` : ""}</b>`
+                const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>${inviterStore[chat.id] === botConfig.adminId ? `\n☄️ InvitedBy: You` : ""}</b>`
                 await api.sendMessage(botConfig.adminId, txt, {
                     parse_mode: "HTML"
                 })
