@@ -378,20 +378,3 @@ api.onText(/\🌃 Events/, async (msg) => {
         return console.log(err.message)
     }
 })
-
-api.onText(/\/admin/, async (msg) => {
-    try {
-        const chat = msg.chat
-        if(chat.type != "private" || chat.id != botConfig.adminId) return
-        const text = `<i>🤖 Admin Panel By @${botConfig.adminName}</i>`
-        return await api.sendMessage(chat.id, text, {
-            parse_mode: "HTML",
-            protect_content: isProtected,
-            reply_markup: {
-                inline_keyboard: keys.getAdminKey()
-            }
-        })
-    } catch (err) {
-        return console.log(err.message)
-    }
-})

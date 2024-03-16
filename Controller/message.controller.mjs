@@ -146,22 +146,4 @@ api.on("message", async (msg) => {
         }
     }
 
-    if (callback === "broadcast") {
-        try {
-            answerCallback[chat.id] = null
-            const msg_id = msg.message_id
-            const users = await userDB.find()
-            const timeOut = setInterval(() => {
-                users.splice(0, 10).forEach(item => {
-                    api.copyMessage(item._id, chat.id, msg_id)
-                })
-            }, 5000);
-            if (users.length === 0) {
-                clearInterval(timeOut)
-            }
-        } catch (err) {
-            return console.log(err.message)
-        }
-    }
-
 })

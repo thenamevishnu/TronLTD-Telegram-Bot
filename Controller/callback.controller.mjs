@@ -65,21 +65,4 @@ api.on("callback_query", async (callback) => {
         }
     }
 
-    if (command === "/send_broadcast") {
-        try {
-            const text = `<i>📧 Create or forward a message to broadcast!</i>`
-            answerCallback[chat.id] = "broadcast"
-            await api.sendMessage(chat.id, text, {
-                parse_mode: "HTML",
-                protect_content: isProtected,
-                reply_markup: {
-                    keyboard: keys.getCancelKey(),
-                    resize_keyboard: true
-                }
-            })
-            return await api.deleteMessage(chat.id, message_id)
-        } catch (err) {
-            return console.log(err.message)
-        }
-    }
 })

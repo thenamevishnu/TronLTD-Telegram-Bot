@@ -1,7 +1,7 @@
 export const botConfig = {
-    botName: "TronLTDBot",
-    chat: "TronLTDChat",
-    botId: 6465447339,
+    botName: "CryptoPaidBot",
+    chat: "CryptoPaidChat",
+    botId: 7033220969,
     adminId: 6545728026,
     adminName: "jsclone",
     amount: {
