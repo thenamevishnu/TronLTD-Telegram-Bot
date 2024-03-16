@@ -334,3 +334,32 @@ api.onText(/📃 History$/, async (msg) => {
         return console.log(err.message)
     }
 })
+
+api.onText(/🔝 Top Users/, async msg => {
+    try {
+        const chat = msg.chat
+        if (chat.type !== "private") return
+        const userList1 = await userDB.find({ invites: { $gt:0 }, account_status: true }).limit(5)
+        let text = `<b>🦉 Top 5 Activated Users.\n</b>`
+        userList1.forEach((item) => {
+            text += `\n<b>🪂 UserName: ${userMention(item._id, item.username, item.first_name)}\n🚀 Referrals: <code>${item.invites}</code></b>` 
+        })
+        if (userList1.length == 0) {
+            text += "\n\n<code>- Nothing found!</code>"
+        }
+        text += `\n\n<b>🦉 Top 5 Non-Activted Users.</b>\n`
+        const userList2 = await userDB.find({ invites: { $gt: 0 }, account_status: false }).limit(5)
+        userList2.forEach((item) => {
+            text += `\n<b>🪂 UserName: ${userMention(item._id, item.username, item.first_name)}\n🚀 Referrals: <code>${item.invites}</code></b>` 
+        })
+        if (userList2.length == 0) {
+            text += "\n\n<code>- Nothing found!</code>"
+        }
+        return await api.sendMessage(chat.id, text, {
+            parse_mode: "HTML",
+            protect_content: isProtected
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})

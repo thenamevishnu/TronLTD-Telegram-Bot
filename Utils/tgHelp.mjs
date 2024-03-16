@@ -28,7 +28,7 @@ export const keys = {
             [`💶 You have: ${balance} ${botConfig.currency}`],
             [`📥 Deposit`, `🎁 Gift`, `📤 Payout`],
             [`⚙️ Settings`, `🪂 Referral`, `📃 History`],
-            [`📊 Bot Status`]
+            [`📊 Bot Status`,`🔝 Top Users`]
         ]
         return key
     },
