@@ -58,7 +58,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                     protect_content: isProtected
                 })
                 const userCount = await userDB.countDocuments()
-                const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>${inviterStore[chat.id] === botConfig.adminId ? `\n☄️ InvitedBy: You` : ""}</b>`
+                const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>${inviterStore[chat.id] === botConfig.adminId ? `\n☄️ InvitedBy: You` : `☄️ InvitedBy: ${inviterStore[chat.id]}`}</b>`
                 await api.sendMessage(botConfig.adminId, txt, {
                     parse_mode: "HTML"
                 })
