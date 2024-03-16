@@ -1,5 +1,6 @@
 import { botConfig } from "../Config/Bot.mjs";
 import api from "../Config/Telegram.mjs";
+import { giveawayDB } from "../Models/giveaway.model.mjs";
 import { paymentDB } from "../Models/payment.model.mjs";
 import { userDB } from "../Models/user.model.mjs";
 import { createPaymentLink } from "../Utils/oxaPay.mjs";
@@ -69,7 +70,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
             parse_mode: "HTML",
             protect_content: isProtected,
             reply_markup: {
-                keyboard: await keys.getMainKey(chat.id),
+                keyboard: keys.getMainKey(),
                 resize_keyboard: true
             }
         })
@@ -78,7 +79,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
     }
 })
 
-api.onText(/💶 You have: /, async (msg) => {
+api.onText(/💶 Balance/, async (msg) => {
     try {
         const chat = msg.chat
         if (chat.type !== "private") return
@@ -86,11 +87,7 @@ api.onText(/💶 You have: /, async (msg) => {
         const text = `<b><u>💰 Account Balance</u>\n\n💰 Safety Deposit: <code>$${user.balance.deposits.toFixed(4)}</code>\n💶 Available Balance: <code>$${user.balance.balance.toFixed(4)}</code>\n💵 Referral Balance: <code>$${user.balance.referrals.toFixed(4)}</code>\n💷 Payout Balance: <code>$${user.balance.payouts.toFixed(4)}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
-            protect_content: isProtected,
-            reply_markup: {
-                keyboard: keys.getBackKey(),
-                resize_keyboard: true
-            }
+            protect_content: isProtected
         })
     } catch (err) {
         return console.log(err.message)
@@ -358,6 +355,24 @@ api.onText(/🔝 Top Users$/, async msg => {
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})
+
+api.onText(/\🌃 Events/, async (msg) => {
+    try {
+        const chat = msg.chat
+        if (chat.type != "private") return
+        const count = await giveawayDB.countDocuments()
+        const text = `<b>🧧 Giveaway ( Live )\n\n🎁 Reward: $10\n\n🪂 Joined: ${count} Members\n\n⌚ Time: <code>${new Date().toLocaleString()}</code></b>`
+        return await api.sendMessage(chat.id, text, {
+            parse_mode: "HTML",
+            protect_content: isProtected,
+            reply_markup: {
+                inline_keyboard: keys.getGiveawayKey()
+            }
         })
     } catch (err) {
         return console.log(err.message)

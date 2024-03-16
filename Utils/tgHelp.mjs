@@ -21,13 +21,11 @@ export const isValidTRXAddress = (address) => {
 }
 
 export const keys = {
-    getMainKey: async (id) => {
-        const user = await userDB.findOne({ _id: id })
-        const balance = user.balance.balance.toFixed(4)
+    getMainKey: () => {
         const key = [
-            [`💶 You have: ${balance} ${botConfig.currency}`],
+            [`💶 Balance`, `🪂 Referral`],
             [`📥 Deposit`, `🎁 Gift`, `📤 Payout`],
-            [`⚙️ Settings`, `🪂 Referral`, `📃 History`],
+            [`⚙️ Settings`, `🌃 Events`, `📃 History`],
             [`📊 Bot Status`,`🔝 Top Users`]
         ]
         return key
@@ -41,6 +39,14 @@ export const keys = {
     getCancelKey: () => {
         const key = [
             ["❌ Cancel"]
+        ]
+        return key
+    },
+    getGiveawayKey: () => {
+        const key = [
+            [
+                { text: "🚀 Join", callback_data: "/join_giveaway"}
+            ]
         ]
         return key
     },

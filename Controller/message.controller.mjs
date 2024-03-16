@@ -28,7 +28,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: await keys.getMainKey(chat.id),
+                    keyboard: keys.getMainKey(),
                     resize_keyboard: true
                 }
             })
@@ -52,7 +52,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: await keys.getMainKey(chat.id),
+                    keyboard: keys.getMainKey(),
                     resize_keyboard: true
                 }
             })
@@ -100,7 +100,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: await keys.getMainKey(chat.id),
+                    keyboard: keys.getMainKey(),
                     resize_keyboard: true
                 }
             })
@@ -137,7 +137,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: await keys.getMainKey(chat.id),
+                    keyboard: keys.getMainKey(),
                     resize_keyboard: true
                 }
             })
