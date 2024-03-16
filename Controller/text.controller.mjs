@@ -49,6 +49,10 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                         invites: 1
                     }
                 })
+                await api.sendMessage(inviter, `<i>🚀 New user joined using your referral link. \n✅ You'll get ${botConfig.amount.commission} ${botConfig.currency} when they activate their account (Only if your account is activated).</i>`, {
+                    parse_mode: "HTML",
+                    protect_content: isProtected
+                })
                 const userCount = await userDB.countDocuments()
                 const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>${inviter === botConfig.adminId ? `\n☄️ InvitedBy: You` : ""}</b>`
                 await api.sendMessage(botConfig.adminId, txt, {

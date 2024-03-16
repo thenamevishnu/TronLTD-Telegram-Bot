@@ -44,7 +44,7 @@ const paymentCallback = async (req, res) => {
                                 account_status: true
                             }
                         })
-                        await userDB.updateOne({
+                        const updateUser = await userDB.updateOne({
                             _id: user.invited_by,
                             account_status: true
                         }, {
@@ -53,6 +53,12 @@ const paymentCallback = async (req, res) => {
                                 "balance.referrals": botConfig.amount.commission
                             }
                         })
+                        if (updateUser.matchedCount == 1 && updateUser.modifiedCount == 1) {
+                            await api.sendMessage(user.invited_by, `<i>✅ Referral commission added: ${botConfig.amount.commission} ${botConfig.currency}</i>`, {
+                                parse_mode: "HTML",
+                                protect_content: isProtected
+                            })
+                        }
                         await api.sendMessage(userId, `<b>✅ Payment is confirmed by the network.</b>`, {
                             parse_mode: "HTML",
                             protect_content: isProtected
