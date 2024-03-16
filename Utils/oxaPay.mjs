@@ -11,7 +11,7 @@ export const createPaymentLink = async (user_id, amount, callbackUrl, orderId) =
         currency: botConfig.currency,
         lifeTime: 30,
         feePaidByPayer: 1,
-        underPaidCover: 2.5,
+        underPaidCover: 0.1,
         callbackUrl: callbackUrl,
         description: user_id,
         orderId: orderId,

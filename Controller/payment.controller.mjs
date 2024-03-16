@@ -20,15 +20,12 @@ const paymentCallback = async (req, res) => {
             const trackId = Number(postData.trackId)
             const payments = await paymentDB.findOne({ trackId: trackId})
             if (postData.type === "payment") {
-                if (paymentStatus == "Waiting") {
-                    console.log(postData)
-                }
                 if (!payments && paymentStatus === "Paid") {
                     const response = await paymentDB.create({
                         user_id: userId,
                         type: postData.type,
-                        amount: parseFloat(postData.amount),
-                        currency: postData.currency,
+                        amount: postData.payAmount,
+                        currency: postData.payCurrency,
                         txID: postData.txID,
                         trackId: postData.trackId,
                         orderId: postData.orderId,
@@ -57,7 +54,7 @@ const paymentCallback = async (req, res) => {
                             }
                         })
                         if (updateUser.matchedCount == 1 && updateUser.modifiedCount == 1) {
-                            await api.sendMessage(user.invited_by, `<i>✅ Referral commission added: ${botConfig.amount.commission} ${botConfig.currency}</i>`, {
+                            await api.sendMessage(user.invited_by, `<i>✅ Referral commission added: $${botConfig.amount.commission}</i>`, {
                                 parse_mode: "HTML",
                                 protect_content: isProtected
                             })
