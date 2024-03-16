@@ -36,3 +36,9 @@ export const createPayout = async (user_id, receiver_crypto_address, amount, cal
 
     return response
 }
+
+export const getPriceInUSD = async (amount, currency) => {
+    const { data: response } = await axios.post(process.env.OXAPAY_PRICES_API)
+    const price = response?.data[currency]
+    return parseFloat(amount * price).toFixed(4)
+}

@@ -5,10 +5,10 @@ export const botConfig = {
     adminId: 6545728026,
     adminName: "jsclone",
     amount: {
-        deposit: 100,
-        gift: 0.1,
-        commission: 75,
-        withdraw: 75
+        deposit: 10,
+        gift: 0.005,
+        commission: 7.5,
+        withdraw: 7.5
     },
-    currency: "TRX"
+    currency: "USDT"
 }

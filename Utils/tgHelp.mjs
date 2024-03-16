@@ -43,5 +43,13 @@ export const keys = {
             ["❌ Cancel"]
         ]
         return key
+    },
+    getAdminKey: () => {
+        const key = [
+            [
+                { text: "📧 Send Broadcast", callback_data: `/send_broadcast`}
+            ]
+        ]
+        return key
     }
 }

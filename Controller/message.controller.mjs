@@ -15,7 +15,7 @@ api.on("message", async (msg) => {
     const check = await userDB.findOne({ _id: chat.id }, { account_status: 1 })
     
     if (!check?.account_status) {
-        await api.sendMessage(chat.id, `<i>🦉 Active your account by one time safety deposit\n\n✅ Benifit: ${botConfig.amount.commission} ${botConfig.currency} per refer and minimum payout ${botConfig.amount.withdraw} ${botConfig.currency}\n\n💵 Refer one, Withdraw instantly.\n\n⚠️ This message will be disabled after account activated!\n\n☄️ For more join: @${botConfig.chat}\n🪂 Admin: @${botConfig.adminName}</i>`, {
+        await api.sendMessage(chat.id, `<i>🦉 Active your account by one time safety deposit\n\n✅ Benifit: $${botConfig.amount.commission.toFixed(4)} per refer and minimum payout $${botConfig.amount.withdraw.toFixed(4)}\n\n💵 Refer one, Withdraw instantly.\n\n⚠️ This message will be disabled after account activated!\n\n☄️ For more join: @${botConfig.chat}\n🪂 Admin: @${botConfig.adminName}</i>`, {
             parse_mode: "HTML",
             protect_content: isProtected
         })
@@ -47,7 +47,7 @@ api.on("message", async (msg) => {
             }
             const returnAmount = (botConfig.amount.deposit * parseInt(msg.text)).toFixed(4)
             answerCallback[chat.id] = null
-            const text = `<b>👥 Referral Count: <code>${parseInt(msg.text)}</code>\n\n💶 Per Refer: <code>${botConfig.amount.deposit.toFixed(4)} ${botConfig.currency}</code>\n\n💰 Total Earn: <code>${returnAmount} ${botConfig.currency}</code></b>`
+            const text = `<b>👥 Referral Count: <code>${parseInt(msg.text)}</code>\n\n💶 Per Refer: <code>$${botConfig.amount.deposit.toFixed(4)}</code>\n\n💰 Total Earn: <code>$${returnAmount}</code></b>`
             return await api.sendMessage(chat.id, text, {
                 parse_mode: "HTML",
                 protect_content: isProtected,
@@ -69,24 +69,11 @@ api.on("message", async (msg) => {
                     protect_content: isProtected
                 })
             }
-            const amount = Number(msg.text)
-            const allowed = new Array(40).fill(0).map((_, index) => botConfig.amount.withdraw * (index + 1))
-            if (amount > allowed[allowed.length - 1]) {
-                return await api.sendMessage(chat.id, `<i>❌ Maximum payout at a time is ${allowed[allowed.length - 1]} ${botConfig.currency}.</i>`, {
-                    parse_mode: "HTML",
-                    protect_content: isProtected
-                })
-            }  
-            if (!allowed.includes(amount)) {
-                return await api.sendMessage(chat.id, `<i>❌ Enter valid amount and it should be multiple of ${botConfig.amount.withdraw}.</i>`, {
-                    parse_mode: "HTML",
-                    protect_content: isProtected
-                })
-            }
+            const amount = parseFloat(msg.text).toFixed(4)
             const user = await userDB.findOne({ _id: chat.id })
             const balance = user.balance.balance
             if (amount < botConfig.amount.withdraw || amount > balance) {
-                return await api.sendMessage(chat.id, `<i>❌ Minimum withdraw: ${botConfig.amount.withdraw} ${botConfig.currency} and maximum withdraw is ${balance.toFixed(4)} ${botConfig.currency}</i>`, {
+                return await api.sendMessage(chat.id, `<i>❌ Minimum withdraw: $${botConfig.amount.withdraw} and maximum withdraw is $${balance.toFixed(4)}</i>`, {
                     parse_mode: "HTML",
                     protect_content: isProtected
                 })
@@ -158,4 +145,23 @@ api.on("message", async (msg) => {
             return console.log(err.message)
         }
     }
+
+    if (callback === "broadcast") {
+        try {
+            answerCallback[chat.id] = null
+            const msg_id = msg.message_id
+            const users = await userDB.find()
+            const timeOut = setInterval(() => {
+                users.splice(0, 10).forEach(item => {
+                    api.copyMessage(item._id, chat.id, msg_id)
+                })
+            }, 5000);
+            if (users.length === 0) {
+                clearInterval(timeOut)
+            }
+        } catch (err) {
+            return console.log(err.message)
+        }
+    }
+
 })

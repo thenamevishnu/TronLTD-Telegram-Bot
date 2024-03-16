@@ -53,7 +53,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                         invites: 1
                     }
                 })
-                await api.sendMessage(inviterStore[chat.id], `<i>${referType}\n✅ You'll get ${botConfig.amount.commission} ${botConfig.currency} when they activate their account (Only if your account is activated).</i>`, {
+                await api.sendMessage(inviterStore[chat.id], `<i>${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
                     parse_mode: "HTML",
                     protect_content: isProtected
                 })
@@ -83,7 +83,7 @@ api.onText(/💶 You have: /, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
-        const text = `<b><u>💰 Account Balance</u>\n\n💶 Available Balance: <code>${user.balance.balance.toFixed(4)} ${botConfig.currency}</code>\n💵 Referral Balance: <code>${user.balance.referrals.toFixed(4)} ${botConfig.currency}</code>\n💷 Payout Balance: <code>${user.balance.payouts.toFixed(4)} ${botConfig.currency}</code></b>`
+        const text = `<b><u>💰 Account Balance</u>\n\n💶 Available Balance: <code>$${user.balance.balance.toFixed(4)}</code>\n💵 Referral Balance: <code>$${user.balance.referrals.toFixed(4)}</code>\n💷 Payout Balance: <code>$${user.balance.payouts.toFixed(4)}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
@@ -114,13 +114,13 @@ api.onText(/🎁 Gift$/, async (msg) => {
                 _id: chat.id
             }, {
                 $inc: {
-                    "balance.balance": botConfig.amount.gift
+                    "balance.balance": botConfig.amount.gift.toFixed(4)
                 },
                 $set: {
                     next_gift: next
                 }
             })
-            text = `<i>🎁 You have received: ${botConfig.amount.gift} ${botConfig.currency}</i>` 
+            text = `<i>🎁 You have received: $${botConfig.amount.gift.toFixed(4)}</i>` 
         }
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
@@ -171,7 +171,7 @@ api.onText(/📊 Bot Status$/, async (msg) => {
             }
         ])
         const response = info[0]
-        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n💶 Total Earned: <code>${response.totalEarned} ${botConfig.currency}</code>\n💷 Total Payouts: <code>${response.totalPayouts} ${botConfig.currency}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
+        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n💶 Total Earned: <code>$${response.totalEarned.toFixed(4)}</code>\n💷 Total Payouts: <code>$${response.totalPayouts.toFixed(4)}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected
@@ -205,7 +205,7 @@ api.onText(/📥 Deposit$/, async (msg) => {
                 protect_content: isProtected
             })
         }
-        const text = `<b>💶 One Time Payment\n\n🆔 OrderID: <code>#${orderId()}</code>\n💵 Cash: <code>${botConfig.amount.deposit} ${botConfig.currency}</code>\n⌚ Expire in 30 minutes</b>`
+        const text = `<b>💶 One Time Payment\n\n🆔 OrderID: <code>#${orderId()}</code>\n💵 Cash: <code>$${botConfig.amount.deposit.toFixed(4)}</code>\n⌚ Expire in 30 minutes</b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
@@ -229,7 +229,7 @@ api.onText(/📤 Payout$/, async (msg) => {
         const user = await userDB.findOne({ _id: chat.id })
         const balance = user.balance.balance
         if (!user.wallet) {
-            const text = `<i>❌ Set ${botConfig.currency} wallet before payout.</i>`
+            const text = `<i>❌ Set  wallet before payout.</i>`
             return await api.sendMessage(chat.id, text, {
                 parse_mode: "HTML",
                 protect_content: isProtected
@@ -242,7 +242,7 @@ api.onText(/📤 Payout$/, async (msg) => {
                 protect_content: isProtected
             })
         }
-        const text = `<b>💵 Enter amount in TRX\n\n📤 Should be multiple of ${botConfig.amount.withdraw}.</b>`
+        const text = `<b>💵 Enter amount in ${botConfig.currency}</b>`
         answerCallback[chat.id] = "payout"
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
@@ -263,7 +263,7 @@ api.onText(/⚙️ Settings$/, async (msg) => {
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const wallet = user.wallet
-        const text = `<b>💹 ${botConfig.currency}: <code>${wallet || `Not Set`}</code>\n\n⚠️ <i>This wallet will be used for future withdrawals</i></b>`
+        const text = `<b>💹 : <code>${wallet || `Not Set`}</code>\n\n⚠️ <i>This wallet will be used for future withdrawals</i></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
@@ -286,8 +286,8 @@ api.onText(/🪂 Referral$/, async (msg) => {
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const invites = user.invites
-        const text = `<b><i>✅ Every verified referral you will get ${botConfig.amount.commission} ${botConfig.currency}</i>\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
-        const text1 = `✅ Every verified referral you will get ${botConfig.amount.commission} ${botConfig.currency}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
+        const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
+        const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
@@ -321,7 +321,7 @@ api.onText(/📃 History$/, async (msg) => {
         const history = await paymentDB.find({ user_id: chat.id }).limit(5)
         let text = `<b>✨ Last 5 Transactions</b>`
         history.forEach((item) => {
-            text += `\n\n<b>🪂 Type: <code>${item.type}</code>\n💵 Amount: <code>${item.amount.toFixed(4)} ${item.currency}</code>\n🆔 txID: <code>${item.txID}</code></b>` 
+            text += `\n\n<b>🪂 Type: <code>${item.type}</code>\n💵 Amount: <code>$${item.amount.toFixed(4)}</code>\n🆔 txID: <code>${item.txID}</code></b>` 
         })
         if (history.length == 0) {
             text += "\n\n<code>- Nothing found!</code>"
@@ -335,7 +335,7 @@ api.onText(/📃 History$/, async (msg) => {
     }
 })
 
-api.onText(/🔝 Top Users/, async msg => {
+api.onText(/🔝 Top Users$/, async msg => {
     try {
         const chat = msg.chat
         if (chat.type !== "private") return
@@ -358,6 +358,23 @@ api.onText(/🔝 Top Users/, async msg => {
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})
+
+api.onText(/\/admin/, async (msg) => {
+    try {
+        const chat = msg.chat
+        if(chat.type != "private" || chat.id != botConfig.adminId) return
+        const text = `<i>🤖 Admin Panel By @${botConfig.adminName}</i>`
+        return await api.sendMessage(chat.id, text, {
+            parse_mode: "HTML",
+            protect_content: isProtected,
+            reply_markup: {
+                inline_keyboard: keys.getAdminKey()
+            }
         })
     } catch (err) {
         return console.log(err.message)
