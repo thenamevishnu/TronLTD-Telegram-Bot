@@ -159,7 +159,7 @@ api.onText(/📊 Bot Status$/, async (msg) => {
                         $count: {}  
                     },
                     totalEarned: {
-                        $sum: "$balance.deposits"
+                        $sum: "$balance.balance"
                     },
                     totalPayouts: {
                         $sum: "$balance.payouts"
