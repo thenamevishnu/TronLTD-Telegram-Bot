@@ -239,6 +239,13 @@ api.onText(/📤 Payout$/, async (msg) => {
                 protect_content: isProtected
             })
         }
+        if (!user.account_status) {
+            const text = `<i>❌ You have to activate your account before payout!</i>`
+            return await api.sendMessage(chat.id, text, {
+                parse_mode: "HTML",
+                protect_content: isProtected
+            })
+        }
         const text = `<b>💵 Enter amount in ${botConfig.currency}</b>`
         answerCallback[chat.id] = "payout"
         return await api.sendMessage(chat.id, text, {
@@ -373,6 +380,69 @@ api.onText(/\🌃 Events/, async (msg) => {
             reply_markup: {
                 inline_keyboard: keys.getGiveawayKey()
             }
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})
+
+api.onText(/\/tip(?: (.+))?$/, async (msg, match) => {
+    try {
+        const chat = msg.chat
+        const user = msg.from
+        if(chat.type == "channel" || chat.type == "private") return
+        const amount = parseFloat(match[1]).toFixed(4)
+        if (!msg.reply_to_message) {
+            return await api.sendMessage(chat.id, `<i>❌ Reply to a message to tip!</i>`, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_to_message_id: msg.message_id
+            })
+        }
+        if (isNaN(amount)) {
+            return await api.sendMessage(chat.id, `<i>❌ Enter amount in USD!</i>`, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_to_message_id: msg.message_id
+            })
+        }
+        const userinfo = msg.reply_to_message.from
+        const existUser = await userDB.findOne({ _id: userinfo.id })
+        if (!existUser) {
+            return await api.sendMessage(chat.id, `<i>❌ ${userMention(userinfo.id, userinfo.username, userinfo.first_name)} is not a user of @${botConfig.botName}</i>`, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_to_message_id: msg.message_id
+            })
+        }
+        const myinfo = await userDB.findOne({ _id: user.id })
+        if (!myinfo) {
+            return await api.sendMessage(chat.id, `<i>❌ You're not a user of @${botConfig.botName}</i>`, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_to_message_id: msg.message_id
+            })
+        }
+        if (amount <= 0 && user.id != botConfig.adminId) {
+            return await api.sendMessage(chat.id, `<i>❌ Tip amount should be greater than 0!</i>`, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_to_message_id: msg.message_id
+            })
+        }
+        if (amount > myinfo.balance.balance) {
+            return await api.sendMessage(chat.id, `<i>❌ You don't have enough balance!</i>`, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_to_message_id: msg.message_id
+            })
+        }
+        await userDB.updateOne({ _id: user.id }, { $inc: { "balance.balance": -(amount) }})
+        await userDB.updateOne({ _id: userinfo.id }, { $inc: { "balance.balance": amount } })
+        return await api.sendMessage(chat.id, `<b>✅ Tipped <code>$${amount}</code>\n\n🪂 Sent: ${userMention(user.id, user.username, user.first_name)}\n🧧 Received: ${userMention(userinfo.id, userinfo.username, userinfo.first_name)}</b>`, {
+            parse_mode: "HTML",
+            protect_content: isProtected,
+            reply_to_message_id: msg.message_id
         })
     } catch (err) {
         return console.log(err.message)
