@@ -49,7 +49,7 @@ api.on("callback_query", async (callback) => {
     
     if (command === "/change_wallet") {
         try {
-            const text = `<i>🖊️ Enter the ${botConfig.currency} address!</i>`
+            const text = `<i>🖊️ Enter the ${botConfig.currency} (TRC20) address!</i>`
             answerCallback[chat.id] = "wallet"
             await api.sendMessage(chat.id, text, {
                 parse_mode: "HTML",
