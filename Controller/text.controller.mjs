@@ -158,8 +158,12 @@ api.onText(/📊 Bot Status$/, async (msg) => {
                     totalUsers: {
                         $count: {}  
                     },
-                    totalEarned: {
-                        $sum: "$balance.balance"
+                    totalActiveUsers: {
+                        $sum: {
+                            $cond: [{
+                                $eq: ["$account_status", true]
+                            }, 1, 0]
+                        }
                     },
                     totalPayouts: {
                         $sum: "$balance.payouts"
@@ -168,7 +172,7 @@ api.onText(/📊 Bot Status$/, async (msg) => {
             }
         ])
         const response = info[0]
-        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n💶 Total Earned: <code>$${response.totalEarned.toFixed(4)}</code>\n💷 Total Payouts: <code>$${response.totalPayouts.toFixed(4)}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
+        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n🔰 Total Activated: <code>${response.totalActiveUsers}</code>\n💷 Total Payouts: <code>$${response.totalPayouts.toFixed(4)}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected
@@ -267,7 +271,7 @@ api.onText(/⚙️ Settings$/, async (msg) => {
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         const wallet = user.wallet
-        const text = `<b>💹 : <code>${wallet || `Not Set`}</code>\n\n⚠️ <i>This wallet will be used for future withdrawals</i></b>`
+        const text = `<b>💹 ${botConfig.currency}: <code>${wallet || `Not Set`}</code>\n\n⚠️ <i>This wallet will be used for future withdrawals</i></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
