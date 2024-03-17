@@ -4,7 +4,7 @@ import { giveawayDB } from "../Models/giveaway.model.mjs";
 import { paymentDB } from "../Models/payment.model.mjs";
 import { userDB } from "../Models/user.model.mjs";
 import { createPaymentLink } from "../Utils/oxaPay.mjs";
-import { answerCallback, inviterStore, isProtected, keys, userMention, uuid } from "../Utils/tgHelp.mjs";
+import { answerCallback, inviterStore, isProtected, joinChannelCheck, joinChatMessage, keys, userMention, uuid } from "../Utils/tgHelp.mjs";
 import dotenv from "dotenv"
 import ShortUniqueId from "short-unique-id";
 
@@ -64,6 +64,47 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                     parse_mode: "HTML"
                 })
             }
+        }
+        const checkJoin = await joinChannelCheck(chat.id)
+        if (!checkJoin) {
+            const resp = joinChatMessage()
+            return await api.sendMessage(chat.id, resp.text, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_markup: {
+                    keyboard: resp.key,
+                    resize_keyboard: true
+                } 
+            })
+        }
+        const text = `<b>🏡 Main Menu</b>`
+        return await api.sendMessage(chat.id, text, {
+            parse_mode: "HTML",
+            protect_content: isProtected,
+            reply_markup: {
+                keyboard: keys.getMainKey(),
+                resize_keyboard: true
+            }
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})
+
+api.onText(/✅ Joined/, async msg => {
+    try {
+        const chat = msg.chat
+        const checkJoin = await joinChannelCheck(chat.id)
+        if (!checkJoin) {
+            const resp = await joinChatMessage()
+            return await api.sendMessage(chat.id, resp.text, {
+                parse_mode: "HTML",
+                protect_content: isProtected,
+                reply_markup: {
+                    keyboard: resp.key,
+                    resize_keyboard: true
+                }
+            })
         }
         const text = `<b>🏡 Main Menu</b>`
         return await api.sendMessage(chat.id, text, {
