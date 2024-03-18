@@ -86,12 +86,16 @@ api.on("message", async (msg) => {
                 process.env.PAYMENT_CALLBACK
             )
             if (payoutStatus) {
+                const currentTime = Math.floor(new Date().getTime()/1000)
                 await userDB.updateOne({
                     _id: chat.id
                 }, {
                     $inc: {
                         "balance.balance": -(amount),
                         "balance.payouts": amount
+                    },
+                    $set: {
+                        next_payout: currentTime + 86400
                     }
                 })
             }

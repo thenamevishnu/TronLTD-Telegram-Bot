@@ -47,6 +47,10 @@ const user = new Schema({
         type: Number,
         default: 0
     },
+    next_payout:{
+        type: Number,
+        default: 0
+    },
     wallet: {
         type: String
     }

@@ -291,6 +291,14 @@ api.onText(/📤 Payout$/, async (msg) => {
                 protect_content: isProtected
             })
         }
+        const currentTime = Math.floor(new Date().getTime()/1000)
+        if (currentTime < user.next_payout) {
+            const text = `<i>❌ Next payout after ${user.next_payout - currentTime} sec.!</i>`
+            return await api.sendMessage(chat.id, text, {
+                parse_mode: "HTML",
+                protect_content: isProtected
+            })
+        }
         const text = `<b>💵 Enter amount in ${botConfig.currency}</b>`
         answerCallback[chat.id] = "payout"
         return await api.sendMessage(chat.id, text, {
