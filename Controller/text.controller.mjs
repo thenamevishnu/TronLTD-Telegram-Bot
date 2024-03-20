@@ -82,7 +82,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
             parse_mode: "HTML",
             protect_content: isProtected,
             reply_markup: {
-                keyboard: keys.getMainKey(),
+                keyboard: keys.getMainKey(chat.id),
                 resize_keyboard: true
             }
         })
@@ -111,7 +111,7 @@ api.onText(/✅ Joined/, async msg => {
             parse_mode: "HTML",
             protect_content: isProtected,
             reply_markup: {
-                keyboard: keys.getMainKey(),
+                keyboard: keys.getMainKey(chat.id),
                 resize_keyboard: true
             }
         })
@@ -421,7 +421,7 @@ api.onText(/🔝 Top Users$/, async msg => {
     }
 })
 
-api.onText(/\🌃 Events/, async (msg) => {
+api.onText(/\🌃 Events$/, async (msg) => {
     try {
         const chat = msg.chat
         if (chat.type != "private") return
@@ -496,6 +496,29 @@ api.onText(/\/tip(?: (.+))?$/, async (msg, match) => {
             parse_mode: "HTML",
             protect_content: isProtected,
             reply_to_message_id: msg.message_id
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})
+
+api.onText(/🎟️ Panel$/, async msg => {
+    try {
+        const chat = msg.chat
+        if (botConfig.adminId != chat.id) return
+        const text = `<b>🎟️ Admin panel</b>`
+        const key = [
+            [
+                { text: "📤 Broadcast", callback_data: `/admin_broadcast`}
+            ], [
+                { text: "ℹ️ Get User", callback_data: `/admin_getuser` }
+            ]
+        ]
+        return await api.sendMessage(chat.id, text, {
+            parse_mode: "HTML",
+            reply_markup: {
+                inline_keyboard: key
+            }
         })
     } catch (err) {
         return console.log(err.message)

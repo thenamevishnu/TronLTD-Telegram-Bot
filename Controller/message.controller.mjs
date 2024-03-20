@@ -2,7 +2,7 @@ import { botConfig } from "../Config/Bot.mjs";
 import api from "../Config/Telegram.mjs";
 import { userDB } from "../Models/user.model.mjs";
 import { createPayout } from "../Utils/oxaPay.mjs";
-import { answerCallback, isProtected, isValidTRXAddress, keys } from "../Utils/tgHelp.mjs";
+import { answerCallback, answerStore, getUserInfo, isProtected, isValidTRXAddress, keys } from "../Utils/tgHelp.mjs";
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -11,6 +11,10 @@ api.on("message", async (msg) => {
     const chat = msg.chat
     if (chat.type !== "private") return 
     const callback = answerCallback[chat.id]
+
+    if (!answerStore[chat.id]) {
+        answerStore[chat.id] = {}
+    }
 
     const check = await userDB.findOne({ _id: chat.id }, { account_status: 1 })
     
@@ -28,7 +32,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: keys.getMainKey(),
+                    keyboard: keys.getMainKey(chat.id),
                     resize_keyboard: true
                 }
             })
@@ -52,7 +56,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: keys.getMainKey(),
+                    keyboard: keys.getMainKey(chat.id),
                     resize_keyboard: true
                 }
             })
@@ -104,7 +108,7 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: keys.getMainKey(),
+                    keyboard: keys.getMainKey(chat.id),
                     resize_keyboard: true
                 }
             })
@@ -141,7 +145,56 @@ api.on("message", async (msg) => {
                 parse_mode: "HTML",
                 protect_content: isProtected,
                 reply_markup: {
-                    keyboard: keys.getMainKey(),
+                    keyboard: keys.getMainKey(chat.id),
+                    resize_keyboard: true
+                }
+            })
+        } catch (err) {
+            return console.log(err.message)
+        }
+    }
+
+    if (callback === "broadcast") {
+        try {
+            const message_id = msg.message_id
+            answerCallback[chat.id] = null
+            await api.sendMessage(chat.id, "<b>👇 Preview Message 👇</b>", {
+                parse_mode: "HTML",
+                reply_markup: {
+                    keyboard: keys.getMainKey(chat.id),
+                    resize_keyboard: true
+                }
+            })
+            await api.copyMessage(chat.id, chat.id, message_id)
+            return await api.sendMessage(chat.id, `<b>❓ Are you confirm to send this broadcast?</b>`, {
+                parse_mode: "HTML",
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            { text: `❌ Cancel`, callback_data: "/stop_bcast" },
+                            { text: `✅ Send`, callback_data: `/send_bcast ${message_id}` }
+                        ]
+                    ]
+                }
+            })
+        } catch (err) {
+            return console.log(err.message)
+        }
+    }
+
+    if (callback === "getuserinfo") {
+        try {
+            if (!msg.text) {
+                return await api.sendMessage(chat.id, `<i>❌ Invalid UserID or Username!</i>`, {
+                    parse_mode: "HTML"
+                })
+            }   
+            answerCallback[chat.id] = null
+            const text = await getUserInfo(msg.text)
+            return await api.sendMessage(chat.id, text, {
+                parse_mode: "HTML",
+                reply_markup: {
+                    keyboard: keys.getMainKey(chat.id),
                     resize_keyboard: true
                 }
             })

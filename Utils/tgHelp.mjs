@@ -8,6 +8,7 @@ export const isProtected = true
 export const answerCallback = {}
 export const answerStore = {}
 export const inviterStore = {}
+export const broadcast_stat = {}
 
 export const uuid = () => uuidv4()
 
@@ -52,19 +53,40 @@ export const joinChatMessage = () => {
     }
 }
 
+export const getUserInfo = async msgText => {
+    try {
+        const userinfo = await userDB.findOne({
+            $or: [
+                {
+                    username: msgText.replace("@", "")
+                }, {
+                    _id: isNaN(msgText) ? 0 : Number(msgText)
+                }
+            ]
+        })
+        const text = `<b>UserName: ${userMention(userinfo._id, userinfo.username, userinfo.first_name)}\nUserID: <code>${userinfo._id}</code>\nAccount Status: <code>${userinfo.account_status ? `Activated` : `Not Activated`}</code>\nInviter: <code>${userinfo.invited_by==botConfig.adminId?`You`:userinfo.invited_by}</code>\n\n<u>Balance Info</u>\n\nSafety Deposit: <code>$${userinfo.balance.deposits.toFixed(4)}</code>\nBalance: <code>$${userinfo.balance.balance.toFixed(4)}</code>\nReferral Balance: <code>$${userinfo.balance.referrals.toFixed(4)}</code>\nPayout Balance: <code>$${userinfo.balance.payouts.toFixed(4)}</code>\n\nInvited: <code>${userinfo.invites}</code></b>`
+        return text
+    } catch {
+        return "Error happend!"
+    }
+}
+
 export const isValidTRXAddress = (address) => {
     const trxAddressRegex = /^(T[0-9a-zA-Z]{33})$/;
     return trxAddressRegex.test(address);
 }
 
 export const keys = {
-    getMainKey: () => {
+    getMainKey: (user) => {
         const key = [
             [`💶 Balance`, `🪂 Referral`],
             [`📥 Deposit`, `🎁 Gift`, `📤 Payout`],
             [`⚙️ Settings`, `🌃 Events`, `📃 History`],
             [`📊 Bot Status`,`🔝 Top Users`]
         ]
+        if (user == botConfig.adminId) {
+            key[3].splice(1,0,"🎟️ Panel")
+        }
         return key
     },
     getBackKey: () => {
