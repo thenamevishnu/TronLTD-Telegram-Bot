@@ -151,4 +151,20 @@ api.on("callback_query", async (callback) => {
         }
     }
 
+    if (command === "/admin_raintag") {
+        try {
+            const text = `<i>🎁 Enter the hashtag for rain</i>`
+            answerCallback[chat.id] = "raintag"
+            return await api.sendMessage(chat.id, text, {
+                parse_mode: "HTML",
+                reply_markup: {
+                    keyboard: keys.getCancelKey(),
+                    resize_keyboard: true
+                }
+            })
+        } catch (err) {
+            return console.log(err.message)
+        }
+    }
+
 })

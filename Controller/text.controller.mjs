@@ -511,7 +511,8 @@ api.onText(/🎟️ Panel$/, async msg => {
             [
                 { text: "📤 Broadcast", callback_data: `/admin_broadcast`}
             ], [
-                { text: "ℹ️ Get User", callback_data: `/admin_getuser` }
+                { text: "ℹ️ Get User", callback_data: `/admin_getuser` },
+                { text: "💧 Rain Tag", callback_data: "/admin_raintag" }
             ]
         ]
         return await api.sendMessage(chat.id, text, {
