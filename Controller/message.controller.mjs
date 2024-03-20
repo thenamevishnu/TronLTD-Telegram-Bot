@@ -11,7 +11,7 @@ dotenv.config()
 api.on("message", async (msg) => {
     const chat = msg.chat
 
-    if (chat.type=="private") {
+    if (chat.type == "supergroup" || chat.type == "group") {
         if (msg?.text) {
             const tagReg = /^[a-zA-Z0-9][a-zA-Z0-9_]{3,34}$/ig
             let tag = msg.text
