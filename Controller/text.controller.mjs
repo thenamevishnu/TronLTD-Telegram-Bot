@@ -396,7 +396,7 @@ api.onText(/🔝 Top Users$/, async msg => {
     try {
         const chat = msg.chat
         if (chat.type !== "private") return
-        const userList1 = await userDB.find({ invites: { $gt:0 }, account_status: true }).limit(5)
+        const userList1 = await userDB.find({ invites: { $gt:0 }, account_status: true }).limit(5).sort({ updatedAt: -1})
         let text = `<b>🦉 Top 5 Activated Users.\n</b>`
         userList1.forEach((item) => {
             text += `\n<b>🪂 UserName: ${userMention(item._id, item.username, item.first_name)}\n🚀 Referrals: <code>${item.invites}</code></b>` 

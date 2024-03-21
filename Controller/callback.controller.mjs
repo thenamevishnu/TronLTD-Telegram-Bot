@@ -111,7 +111,9 @@ api.on("callback_query", async (callback) => {
                     broadcast_stat["sent"]++
                     const user_id = item._id
                     try {
-                        await api.copyMessage(user_id, chat.id, msg_id)
+                        await api.copyMessage(user_id, chat.id, msg_id, {
+                            protect_content: isProtected
+                        })
                         broadcast_stat["success"]++
                     } catch (err) { }
 
