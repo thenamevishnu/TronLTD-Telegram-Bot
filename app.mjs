@@ -10,6 +10,7 @@ import "./Controller/message.controller.mjs"
 import "./Controller/callback.controller.mjs"
 import api from "./Config/Telegram.mjs"
 import { userDB } from "./Models/user.model.mjs"
+import { botConfig } from "./Config/Bot.mjs"
 
 env.config()
 db.dbConnect()
@@ -29,7 +30,15 @@ cronJob.schedule("*/5 * * * * *", async () => {
         const randomUser = await userDB.aggregate([{ $sample: { size: 1 } }])
         const id = randomUser[0]?._id
         try {
-            await api.getChat(id)
+            const response = await api.getChat(id)
+            console.log("Alive: " + response.id)
+            const info = await userDB.findOne({ _id: response.id })
+            const inviter = info.invited_by
+            const inviterInfo = await userDB.findOne({ _id: inviter })
+            if (!inviterInfo) {
+                await userDB.updateOne({ _id: response.id }, { $set: { invited_by: botConfig.adminId } })
+                console.log("Inviter of " + response.id + " changed to " + botConfig.adminId)
+            }
         } catch (err) {
             await userDB.deleteOne({ _id: id })
             console.log("Deleted: "+id)
