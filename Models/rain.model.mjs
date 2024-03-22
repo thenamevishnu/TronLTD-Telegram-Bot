@@ -7,7 +7,7 @@ const rain = new Schema({
     },
     amount: {
         type: Number,
-        default: 0.5
+        default: 0.005
     },
     claimed: {
         type: Array,
