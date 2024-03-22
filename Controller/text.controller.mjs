@@ -50,7 +50,8 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                 first_name: chat.first_name,
                 last_name: chat.last_name,
                 username: chat.username,
-                invited_by: inviterStore[chat.id]
+                invited_by: inviterStore[chat.id],
+                last_message_time: Math.floor(new Date().getTime()/1000)
             })
             if (response._id) {
                 await userDB.updateOne({
