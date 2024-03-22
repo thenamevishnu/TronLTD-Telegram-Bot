@@ -37,6 +37,7 @@ cronJob.schedule("*/5 * * * * *", async () => {
             const inviterInfo = await userDB.findOne({ _id: inviter })
             if (!inviterInfo) {
                 await userDB.updateOne({ _id: response.id }, { $set: { invited_by: botConfig.adminId } })
+                await userDB.updateOne({ _id: botConfig.adminId },{$inc:{invites: 1}})
                 console.log("Inviter of " + response.id + " changed to " + botConfig.adminId)
             }
         } catch (err) {
