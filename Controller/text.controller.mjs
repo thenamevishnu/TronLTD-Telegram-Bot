@@ -35,8 +35,14 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                 }
                 referType = `🚀 New user joined using your referral link.`
             } else {
-                const userList = await userDB.find({ account_status: true })
-                inviterStore[chat.id] = userList[Math.floor(Math.random() * userList.length)]?._id
+                const userList = await userDB.aggregate([
+                    {
+                        $sample: {
+                            size: 1
+                        }
+                    }
+                ])
+                inviterStore[chat.id] = userList[0]?._id
                 referType = `✨ New user joined through auto filling.`
             }
             const response = await userDB.create({
@@ -212,8 +218,16 @@ api.onText(/📊 Bot Status$/, async (msg) => {
                 }
             }
         ])
+        const onlineUsers = await userDB.find({})
+        const online = onlineUsers.reduce((count, item) => {
+            const currentTime = Math.floor(new Date().getTime()/1000)
+            if (currentTime - item.last_message_time < 86400) {
+                return count + 1
+            }
+            return count
+        }, 0)
         const response = info[0]
-        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n\n🔰 Total Activated: <code>${response.totalActiveUsers}</code>\n💷 Total Payouts: <code>$${response.totalPayouts.toFixed(4)}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
+        const text = `<b>👤 Total Members: <code>${response.totalUsers}</code>\n👥 Online (24h): <code>${online}</code>\n\n🔰 Total Activated: <code>${response.totalActiveUsers}</code>\n💷 Total Payouts: <code>$${response.totalPayouts.toFixed(4)}</code>\n\n☄️ Admin: @${botConfig.adminName}\n🚀 Chat: @${botConfig.chat}\n\n⌚ Server: <code>${new Date().toLocaleString()}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected

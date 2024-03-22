@@ -53,6 +53,9 @@ const user = new Schema({
     },
     wallet: {
         type: String
+    },
+    last_message_time: {
+        type: Number
     }
 }, {
     timestamps: true

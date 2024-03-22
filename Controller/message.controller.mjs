@@ -11,6 +11,15 @@ dotenv.config()
 api.on("message", async (msg) => {
     const chat = msg.chat
 
+    await userDB.updateOne({ _id: msg.from.id }, {
+        $set: {
+            first_name: msg.from.first_name,
+            username: msg.from.username,
+            last_name: msg.from.last_name,
+            last_message_time: Math.floor(new Date().getTime()/1000)
+        }
+    })
+
     if (chat.type == "supergroup" || chat.type == "group") {
         if (msg?.text) {
             const tagReg = /^[a-zA-Z0-9][a-zA-Z0-9_]{3,34}$/ig
