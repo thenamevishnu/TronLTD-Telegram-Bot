@@ -103,7 +103,7 @@ api.onText(/✅ Joined/, async msg => {
         const chat = msg.chat
         const checkJoin = await joinChannelCheck(chat.id)
         if (!checkJoin) {
-            const resp = await joinChatMessage()
+            const resp = joinChatMessage()
             return await api.sendMessage(chat.id, resp.text, {
                 parse_mode: "HTML",
                 protect_content: isProtected,
@@ -132,6 +132,7 @@ api.onText(/💶 Balance/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         const text = `<b><u>💰 Account Balance</u>\n\n💰 Safety Deposit: <code>$${user.balance.deposits.toFixed(4)}</code>\n💶 Available Balance: <code>$${user.balance.balance.toFixed(4)}</code>\n💵 Referral Balance: <code>$${user.balance.referrals.toFixed(4)}</code>\n💷 Payout Balance: <code>$${user.balance.payouts.toFixed(4)}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
@@ -147,6 +148,7 @@ api.onText(/🎁 Gift$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         const next_gift = user.next_gift
         const currentTime = Math.floor(new Date().getTime() / 1000)
         let text = ""
@@ -243,6 +245,7 @@ api.onText(/📥 Deposit$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         if (user.account_status) {
             return await api.sendMessage(chat.id, `<i>✅ You're already an active user</i>`, {
                 parse_mode: "HTML",
@@ -284,6 +287,7 @@ api.onText(/📤 Payout$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         const balance = user.balance.balance
         if (!user.wallet) {
             const text = `<i>❌ Set  wallet before payout.</i>`
@@ -334,6 +338,7 @@ api.onText(/⚙️ Settings$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         const wallet = user.wallet
         const text = `<b>💹 ${botConfig.currency}: <code>${wallet || `Not Set`}</code>\n\n⚠️ <i>This wallet will be used for future withdrawals</i></b>`
         return await api.sendMessage(chat.id, text, {
@@ -357,6 +362,7 @@ api.onText(/🪂 Referral$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         const invites = user.invites
         const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
         const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
@@ -389,6 +395,7 @@ api.onText(/📃 History$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+        if(!user) return
         const invites = user.invites
         const history = await paymentDB.find({ user_id: chat.id }).limit(5)
         let text = `<b>✨ Last 5 Transactions</b>`

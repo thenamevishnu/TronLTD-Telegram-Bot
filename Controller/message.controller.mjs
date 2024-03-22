@@ -10,6 +10,8 @@ dotenv.config()
 
 api.on("message", async (msg) => {
     const chat = msg.chat
+    const user = await userDB.findOne({ _id: msg.from.id })
+    if(!user) return
 
     await userDB.updateOne({ _id: msg.from.id }, {
         $set: {

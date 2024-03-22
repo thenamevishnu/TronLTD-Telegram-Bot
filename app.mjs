@@ -8,6 +8,8 @@ import paymentRoute from "./Routes/payment.route.mjs"
 import "./Controller/text.controller.mjs"
 import "./Controller/message.controller.mjs"
 import "./Controller/callback.controller.mjs"
+import api from "./Config/Telegram.mjs"
+import { userDB } from "./Models/user.model.mjs"
 
 env.config()
 db.dbConnect()
@@ -20,6 +22,21 @@ cronJob.schedule("* * * * *", async () => {
     }).catch(err => {
         console.log(err.message)
     })
+})
+
+cronJob.schedule("*/5 * * * * *", async () => {
+    try {
+        const randomUser = await userDB.aggregate([{ $sample: { size: 1 } }])
+        const id = randomUser[0]?._id
+        try {
+            await api.getChat(id)
+        } catch (err) {
+            await userDB.deleteOne({ _id: id })
+            console.log("Deleted: "+id)
+        }
+    } catch (err) {
+        console.log(err.message)
+    }
 })
 
 app.use(express.json())
