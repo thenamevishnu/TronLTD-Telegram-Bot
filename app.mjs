@@ -41,7 +41,8 @@ cronJob.schedule("*/2 * * * * *", async () => {
                 console.log("Inviter of " + response.id + " changed to " + botConfig.adminId)
             }
         } catch (err) {
-            await userDB.deleteOne({ _id: id })
+            const response = await userDB.findOneAndDelete({ _id: id })
+            await userDB.updateOne({ _id: response.invited_by },{$inc:{invites: -1}})
             console.log("Deleted: "+id)
         }
     } catch (err) {
