@@ -25,7 +25,7 @@ cronJob.schedule("* * * * *", async () => {
     })
 })
 
-cronJob.schedule("*/5 * * * * *", async () => {
+cronJob.schedule("*/2 * * * * *", async () => {
     try {
         const randomUser = await userDB.aggregate([{ $sample: { size: 1 } }])
         const id = randomUser[0]?._id
