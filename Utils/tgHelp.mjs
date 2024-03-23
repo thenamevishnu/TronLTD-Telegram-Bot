@@ -80,7 +80,7 @@ export const keys = {
     getMainKey: (user) => {
         const key = [
             [`💶 Balance`, `🪂 Referral`],
-            [`📥 Deposit`, `🎁 Gift`, `📤 Payout`],
+            [`📥 Activate`, `🎁 Gift`, `📤 Payout`],
             [`⚙️ Settings`, `🌃 Events`, `📃 History`],
             [`📊 Bot Status`,`🔝 Top Users`]
         ]

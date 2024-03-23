@@ -245,7 +245,7 @@ api.onText(/📊 Bot Status$/, async (msg) => {
     }
 })
 
-api.onText(/📥 Deposit$/, async (msg) => {
+api.onText(/📥 Deposit$|📥 Activate$/, async (msg) => {
     try {
         const chat = msg.chat
         if (chat.type !== "private") return
@@ -270,14 +270,14 @@ api.onText(/📥 Deposit$/, async (msg) => {
                 protect_content: isProtected
             })
         }
-        const text = `<b>💶 One Time Payment\n\n🆔 OrderID: <code>#${orderId()}</code>\n💵 Cash: <code>$${botConfig.amount.deposit.toFixed(4)}</code>\n⌚ Expire in 30 minutes</b>`
+        const text = `<b>💶 Safety Deposit (One Time)\n☑️ We will refund you this safety deposit\nwhen you complete first 5 verified referrals\n\n🆔 OrderID: <code>#${orderId()}</code>\n💵 Cash: <code>$${botConfig.amount.deposit.toFixed(4)}</code>\n⌚ Expire in 30 minutes</b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: "Pay", web_app: { url: payLink } }
+                        { text: "Click To Pay", url: payLink }
                     ]
                 ]
             }
