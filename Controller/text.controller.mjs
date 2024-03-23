@@ -37,6 +37,11 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
             } else {
                 const userList = await userDB.aggregate([
                     {
+                        $match: {
+                            account_status: true
+                        }
+                    },
+                    {
                         $sample: {
                             size: 1
                         }

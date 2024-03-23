@@ -31,7 +31,6 @@ cronJob.schedule("*/2 * * * * *", async () => {
         const id = randomUser[0]?._id
         try {
             const response = await api.getChat(id)
-            console.log("Alive: " + response.id)
             const info = await userDB.findOne({ _id: response.id })
             const inviter = info.invited_by
             const inviterInfo = await userDB.findOne({ _id: inviter })
