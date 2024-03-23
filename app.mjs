@@ -18,9 +18,7 @@ db.dbConnect()
 const app = express()
 
 cronJob.schedule("* * * * *", async () => {
-    axios.get(`${process.env.SERVER}`).then(({ data: resData }) => {
-        console.log("Server wokeup")
-    }).catch(err => {
+    axios.get(`${process.env.SERVER}`).then(({ data: resData }) => {}).catch(err => {
         console.log(err.message)
     })
 })
@@ -32,7 +30,7 @@ cronJob.schedule("*/2 * * * * *", async () => {
         try {
             const response = await api.getChat(id)
             const info = await userDB.findOne({ _id: response.id })
-            const inviter = info.invited_by
+            const inviter = info?.invited_by
             const inviterInfo = await userDB.findOne({ _id: inviter })
             if (!inviterInfo) {
                 await userDB.updateOne({ _id: response.id }, { $set: { invited_by: botConfig.adminId } })
@@ -41,11 +39,13 @@ cronJob.schedule("*/2 * * * * *", async () => {
             }
         } catch (err) {
             const response = await userDB.findOneAndDelete({ _id: id })
-            await userDB.updateOne({ _id: response.invited_by },{$inc:{invites: -1}})
-            console.log("Deleted: "+id)
+            if (response && response._id) {
+                await userDB.updateOne({ _id: response.invited_by },{$inc:{invites: -1}})
+                console.log("Deleted: "+id)
+            }
         }
     } catch (err) {
-        console.log(err.message)
+        console.log(err)
     }
 })
 
