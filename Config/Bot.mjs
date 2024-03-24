@@ -18,7 +18,8 @@ export const botConfig = {
         deposit: 2,
         gift: 0.001,
         commission: 1,
-        withdraw: 2
+        withdraw: 2,
+        promotion: 0.0025
     },
     currency: "USDT"
 }

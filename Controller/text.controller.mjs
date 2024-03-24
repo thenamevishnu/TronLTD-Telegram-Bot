@@ -63,10 +63,11 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                     _id: inviterStore[chat.id]
                 }, {
                     $inc: {
-                        invites: 1
+                        invites: 1,
+                        "balance.promotion": botConfig.amount.promotion
                     }
                 })
-                await api.sendMessage(inviterStore[chat.id], `<i>${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
+                await api.sendMessage(inviterStore[chat.id], `<i>🎁 Promotional Reward: +${botConfig.amount.promotion}\n\n${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
                     parse_mode: "HTML",
                     protect_content: isProtected
                 })
@@ -138,7 +139,7 @@ api.onText(/💶 Balance/, async (msg) => {
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         if(!user) return
-        const text = `<b><u>💰 Account Balance</u>\n\n💰 Safety Deposit: <code>$${user.balance.deposits.toFixed(4)}</code>\n💶 Available Balance: <code>$${user.balance.balance.toFixed(4)}</code>\n💵 Referral Balance: <code>$${user.balance.referrals.toFixed(4)}</code>\n💷 Payout Balance: <code>$${user.balance.payouts.toFixed(4)}</code></b>`
+        const text = `<b><u>💰 Account Balance</u>\n\n💰 Safety Deposit: <code>$${user.balance.deposits.toFixed(4)}</code>\n💶 Available Balance: <code>$${user.balance.balance.toFixed(4)}</code>\n💵 Referral Balance: <code>$${user.balance.referrals.toFixed(4)}</code>\n💷 Payout Balance: <code>$${user.balance.payouts.toFixed(4)}</code>\n\n🎁 Promotional Reward: <code>$${user.balance.promotion.toFixed(4)}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected

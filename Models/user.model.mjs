@@ -41,6 +41,10 @@ const user = new Schema({
         payouts: {
             type: Number,
             default: 0
+        },
+        promotion: {
+            type: Number,
+            default: 0
         }
     },
     next_gift: {
