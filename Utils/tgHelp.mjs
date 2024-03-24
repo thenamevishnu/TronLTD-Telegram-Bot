@@ -55,12 +55,12 @@ export const keys = {
     getMainKey: (user) => {
         const key = [
             [`💶 Balance`, `🪂 Referral`],
-            [`📥 Activate`, `🎁 Gift`, `📤 Payout`],
-            [`⚙️ Settings`, `🌃 Events`, `📃 History`],
-            [`📊 Bot Status`,`🔝 Top Users`]
+            [`📥 Activate`, `🌃 Events`, `📤 Payout`],
+            [`⚙️ Settings`, `📃 History`],
+            [`📊 Bot Status`,`⁉️ FAQ`, `🔝 Top Users`]
         ]
         if (user == botConfig.adminId) {
-            key[3].splice(1,0,"🎟️ Panel")
+            key.push(["🎟️ Panel"])
         }
         return key
     },

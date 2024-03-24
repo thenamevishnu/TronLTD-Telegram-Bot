@@ -19,7 +19,8 @@ const user = new Schema({
         type: Number
     },
     invites: {
-        type: Number  
+        type: Number,
+        default: 0
     },
     account_status: {
         type: Boolean,
@@ -59,7 +60,8 @@ const user = new Schema({
         type: String
     },
     last_message_time: {
-        type: Number
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

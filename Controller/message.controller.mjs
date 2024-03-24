@@ -74,15 +74,6 @@ api.on("message", async (msg) => {
         answerStore[chat.id] = {}
     }
 
-    const check = await userDB.findOne({ _id: chat.id }, { account_status: 1 })
-    
-    if (!check?.account_status) {
-        await api.sendMessage(chat.id, `<i>🦉 Active your account by one time safety deposit (refundable)\n\n✅ Benifits: \n       - $${botConfig.amount.commission} per refer\n       - Minimum payout $${botConfig.amount.withdraw}\n       - Auto filling\n       - Events like contest, giveaway, etc.\n\n⚠️ This message will be disabled after account activated!\n\n☄️ For more join: @${botConfig.chat}\n🪂 Admin: @${botConfig.adminName}</i>`, {
-            parse_mode: "HTML",
-            protect_content: isProtected
-        })
-    }
-
     if (msg.text === "❌ Cancel") {
         try {
             answerCallback[chat.id] = null

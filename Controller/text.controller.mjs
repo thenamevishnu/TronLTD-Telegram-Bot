@@ -10,7 +10,7 @@ import ShortUniqueId from "short-unique-id";
 
 dotenv.config()
 
-api.onText(/\/faq/, async msg => {
+api.onText(/\/faq|⁉️ FAQ$/, async msg => {
     try {
         const chat = msg.chat
         const replayto = msg?.reply_to_message?.message_id || msg.message_id
@@ -116,7 +116,13 @@ api.onText(/💶 Balance/, async (msg) => {
         const text = `<b><u>💰 Account Balance</u>\n\n💰 Safety Deposit: <code>$${user.balance.deposits.toFixed(4)}</code>\n💶 Available Balance: <code>$${user.balance.balance.toFixed(4)}</code>\n💵 Referral Balance: <code>$${user.balance.referrals.toFixed(4)}</code>\n💷 Payout Balance: <code>$${user.balance.payouts.toFixed(4)}</code>\n\n🎁 Promotional Reward: <code>$${user.balance.promotion.toFixed(4)}</code></b>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
-            protect_content: isProtected
+            protect_content: isProtected,
+            reply_markup: {
+                keyboard: [
+                    ["🔙 Back"]
+                ],
+                resize_keyboard: true
+            }
         })
     } catch (err) {
         return console.log(err.message)
@@ -127,28 +133,7 @@ api.onText(/🎁 Gift$/, async (msg) => {
     try {
         const chat = msg.chat
         if (chat.type !== "private") return
-        const user = await userDB.findOne({ _id: chat.id })
-        if(!user) return
-        const next_gift = user.next_gift
-        const currentTime = Math.floor(new Date().getTime() / 1000)
-        let text = ""
-        if (currentTime < next_gift) {
-            const timer = next_gift - currentTime
-            text = `<i>❌ You have already claimed!\n\n⚠️ Come back after: ${timer} sec.</i>`
-        } else {
-            const next = currentTime + 86400
-            await userDB.updateOne({
-                _id: chat.id
-            }, {
-                $inc: {
-                    "balance.balance": botConfig.amount.gift.toFixed(4)
-                },
-                $set: {
-                    next_gift: next
-                }
-            })
-            text = `<i>🎁 You have received: $${botConfig.amount.gift.toFixed(4)}</i>` 
-        }
+        const text = `<i>❌ This feature has been removed</i>`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected
@@ -345,7 +330,7 @@ api.onText(/🪂 Referral$/, async (msg) => {
         if(!user) return
         const invites = user.invites
         const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
-        const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
+        const text1 = `__✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}__`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
@@ -353,14 +338,6 @@ api.onText(/🪂 Referral$/, async (msg) => {
                 inline_keyboard: [
                     [
                         { text: "Share To Telegram", url: `https://t.me/share/url?url=${text1}` }
-                    ],
-                    [
-                        
-                        { text: "Share To Whatsapp", url: `https://api.whatsapp.com/send?text=${text1}` },
-                        { text: "Share To Facebook", url: `https://facebook.com/sharer/sharer.php?u=${text1}` }
-                    ],
-                    [
-                        { text: "Share To Twitter", url: `https://twitter.com/intent/tweet?text=${text1}`}
                     ]
                 ]
             }
@@ -376,7 +353,6 @@ api.onText(/📃 History$/, async (msg) => {
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
         if(!user) return
-        const invites = user.invites
         const history = await paymentDB.find({ user_id: chat.id }).limit(5)
         let text = `<b>✨ Last 5 Transactions</b>`
         history.forEach((item) => {
