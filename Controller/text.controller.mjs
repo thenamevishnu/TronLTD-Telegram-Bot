@@ -330,7 +330,7 @@ api.onText(/🪂 Referral$/, async (msg) => {
         if(!user) return
         const invites = user.invites
         const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
-        const text1 = `__✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}__`
+        const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
