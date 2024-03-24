@@ -67,7 +67,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                         "balance.promotion": botConfig.amount.promotion
                     }
                 })
-                await api.sendMessage(inviterStore[chat.id], `<i>🎁 Promotional Reward: +${botConfig.amount.promotion}\n\n${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
+                await api.sendMessage(inviterStore[chat.id], `<i>🎁 Promotional Reward: +$${botConfig.amount.promotion}\n\n${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
                     parse_mode: "HTML",
                     protect_content: isProtected
                 })
@@ -370,8 +370,8 @@ api.onText(/🪂 Referral$/, async (msg) => {
         const user = await userDB.findOne({ _id: chat.id })
         if(!user) return
         const invites = user.invites
-        const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
-        const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
+        const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
+        const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
