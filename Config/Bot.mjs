@@ -1,6 +1,7 @@
 export const botConfig = {
     botName: "CryptoPaidBot",
     chat: "CryptoPaidChat",
+    updates: "CryptoPaidAnn",
     botId: 7033220969,
     chatList: [
         {

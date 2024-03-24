@@ -4,10 +4,9 @@ import { giveawayDB } from "../Models/giveaway.model.mjs";
 import { paymentDB } from "../Models/payment.model.mjs";
 import { userDB } from "../Models/user.model.mjs";
 import { createPaymentLink } from "../Utils/oxaPay.mjs";
-import { answerCallback, inviterStore, isProtected, joinChannelCheck, joinChatMessage, keys, userMention, uuid } from "../Utils/tgHelp.mjs";
+import { answerCallback, getFAQ, inviterStore, isProtected, keys, userMention } from "../Utils/tgHelp.mjs";
 import dotenv from "dotenv"
 import ShortUniqueId from "short-unique-id";
-import {readFileSync} from "fs"
 
 dotenv.config()
 
@@ -15,11 +14,7 @@ api.onText(/\/faq/, async msg => {
     try {
         const chat = msg.chat
         const replayto = msg?.reply_to_message?.message_id || msg.message_id
-        const file = JSON.parse(readFileSync("./Config/faq.json", "utf-8"))
-        let text = `<b>⁉️ Frequently Asked Questions (FAQ)!</b>`
-        file.forEach((item, index) => {
-            text += `\n\n<b>${index+1}: ${item.question}</b>\n\n<i>- ${item.answer}</i>`
-        })
+        const text = getFAQ()
         return await api.sendMessage(chat.id, text, {
             protect_content: isProtected,
             parse_mode: "HTML",
@@ -98,48 +93,7 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                 })
             }
         }
-        const checkJoin = await joinChannelCheck(chat.id)
-        if (!checkJoin) {
-            const resp = joinChatMessage()
-            return await api.sendMessage(chat.id, resp.text, {
-                parse_mode: "HTML",
-                protect_content: isProtected,
-                reply_markup: {
-                    keyboard: resp.key,
-                    resize_keyboard: true
-                } 
-            })
-        }
-        const text = `<b>🏡 Main Menu</b>`
-        return await api.sendMessage(chat.id, text, {
-            parse_mode: "HTML",
-            protect_content: isProtected,
-            reply_markup: {
-                keyboard: keys.getMainKey(chat.id),
-                resize_keyboard: true
-            }
-        })
-    } catch (err) {
-        return console.log(err.message)
-    }
-})
-
-api.onText(/✅ Joined/, async msg => {
-    try {
-        const chat = msg.chat
-        const checkJoin = await joinChannelCheck(chat.id)
-        if (!checkJoin) {
-            const resp = joinChatMessage()
-            return await api.sendMessage(chat.id, resp.text, {
-                parse_mode: "HTML",
-                protect_content: isProtected,
-                reply_markup: {
-                    keyboard: resp.key,
-                    resize_keyboard: true
-                }
-            })
-        }
-        const text = `<b>🏡 Main Menu</b>`
+        const text = getFAQ()
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,
@@ -450,7 +404,7 @@ api.onText(/🔝 Top Users$/, async msg => {
             text += `\n<b>🪂 UserName: ${userMention(item._id, item.username, item.first_name)}\n🚀 Referrals: <code>${item.invites}</code></b>` 
         })
         if (userList1.length == 0) {
-            text += "\n\n<code>- Nothing found!</code>"
+            text += "\n<code>- Nothing found!</code>"
         }
         text += `\n\n<b>🦉 Top 5 Non-Activted Users.</b>\n`
         const userList2 = await userDB.find({ invites: { $gt: 0 }, account_status: false }).limit(5).sort({ invites: -1, updatedAt: -1})
@@ -458,7 +412,7 @@ api.onText(/🔝 Top Users$/, async msg => {
             text += `\n<b>🪂 UserName: ${userMention(item._id, item.username, item.first_name)}\n🚀 Referrals: <code>${item.invites}</code></b>` 
         })
         if (userList2.length == 0) {
-            text += "\n\n<code>- Nothing found!</code>"
+            text += "\n<code>- Nothing found!</code>"
         }
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
