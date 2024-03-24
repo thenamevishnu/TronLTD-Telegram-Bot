@@ -34,6 +34,9 @@ const paymentCallback = async (req, res) => {
                     })
                     if (response._id) {
                         const user = await userDB.findOne({ _id: userId })
+                        const lvl1 = await userDB.findOne({ _id: user.invited_by })
+                        const lvl2 = await userDB.findOne({ _id: lvl1.invited_by })
+                        const lvl3 = await userDB.findOne({ _id: lvl2.invited_by })
                         await userDB.updateOne({
                             _id: userId
                         }, {
@@ -44,8 +47,8 @@ const paymentCallback = async (req, res) => {
                                 account_status: true
                             }
                         })
-                        const updateUser = await userDB.updateOne({
-                            _id: user.invited_by,
+                        const lvl1UpdateUser = await userDB.updateOne({
+                            _id: lvl1._id,
                             account_status: true
                         }, {
                             $inc: {
@@ -53,13 +56,51 @@ const paymentCallback = async (req, res) => {
                                 "balance.referrals": botConfig.amount.commission
                             }
                         })
+                        const lvl2pdateUser = await userDB.updateOne({
+                            _id: lvl2._id,
+                            account_status: true
+                        }, {
+                            $inc: {
+                                "balance.balance": botConfig.amount.otherLevel_commission,
+                                "balance.referrals": botConfig.amount.otherLevel_commission
+                            }
+                        })
+                        const lvl3UpdateUser = await userDB.updateOne({
+                            _id: lvl3._id,
+                            account_status: true
+                        }, {
+                            $inc: {
+                                "balance.balance": botConfig.amount.otherLevel_commission,
+                                "balance.referrals": botConfig.amount.otherLevel_commission
+                            }
+                        })
                         await api.sendMessage(userId, `<b>✅ Payment is confirmed by the network.</b>`, {
                             parse_mode: "HTML",
                             protect_content: isProtected
                         })
-                        if (updateUser.matchedCount == 1 && updateUser.modifiedCount == 1) {
+                        if (lvl1UpdateUser.matchedCount == 1 && lvl1UpdateUser.modifiedCount == 1) {
                             try {
-                                await api.sendMessage(user.invited_by, `<i>✅ Referral commission added: $${botConfig.amount.commission}</i>`, {
+                                await api.sendMessage(lvl1._id, `<i>✅ Referral commission added (Level 1): $${botConfig.amount.commission}</i>`, {
+                                    parse_mode: "HTML",
+                                    protect_content: isProtected
+                                })
+                            } catch (err) {
+                                console.log(err.message)
+                            }
+                        }
+                        if (lvl2pdateUser.matchedCount == 1 && lvl2pdateUser.modifiedCount == 1) {
+                            try {
+                                await api.sendMessage(lvl2._id, `<i>✅ Referral commission added (Level 2): $${botConfig.amount.otherLevel_commission}</i>`, {
+                                    parse_mode: "HTML",
+                                    protect_content: isProtected
+                                })
+                            } catch (err) {
+                                console.log(err.message)
+                            }
+                        }
+                        if (lvl3UpdateUser.matchedCount == 1 && lvl3UpdateUser.modifiedCount == 1) {
+                            try {
+                                await api.sendMessage(lvl3._id, `<i>✅ Referral commission added (Level 3): $${botConfig.amount.otherLevel_commission}</i>`, {
                                     parse_mode: "HTML",
                                     protect_content: isProtected
                                 })

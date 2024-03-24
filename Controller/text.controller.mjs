@@ -82,15 +82,38 @@ api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
                         "balance.promotion": botConfig.amount.promotion
                     }
                 })
-                await api.sendMessage(inviterStore[chat.id], `<i>🎁 Promotional Reward: +$${botConfig.amount.promotion}\n\n${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
-                    parse_mode: "HTML",
-                    protect_content: isProtected
-                })
                 const userCount = await userDB.countDocuments()
                 const txt = `<b>🦉 Users: <code>${userCount}</code>\n🚀 UserName: ${userMention(chat.id, chat.username, chat.first_name)}\n🆔 UserID: <code>${chat.id}</code>\n☄️ InvitedBy: <code>${inviterStore[chat.id] === botConfig.adminId ? `You` : `${inviterStore[chat.id]}`}</code></b>`
                 await api.sendMessage(botConfig.adminId, txt, {
                     parse_mode: "HTML"
                 })
+                const lvl1 = await userDB.findOne({ _id: inviterStore[chat.id] })
+                const lvl2 = await userDB.findOne({ _id: lvl1.invited_by })
+                const lvl3 = await userDB.findOne({ _id: lvl2.invited_by })
+                try {
+                    await api.sendMessage(lvl1._id, `<i>🎚️ Level: 1\n\n🎁 Promotional Reward: +$${botConfig.amount.promotion}\n\n${referType}\n✅ You'll get $${botConfig.amount.commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
+                        parse_mode: "HTML",
+                        protect_content: isProtected
+                    })
+                } catch (err) {
+                    console.log(err.message)
+                }
+                try {     
+                    await api.sendMessage(lvl2._id, `<i>🎚️ Level: 2\n\n✅ You'll get $${botConfig.amount.otherLevel_commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
+                        parse_mode: "HTML",
+                        protect_content: isProtected
+                    })
+                } catch (err) {
+                    console.log(err.message)
+                }
+                try {
+                    await api.sendMessage(lvl3._id, `<i>🎚️ Level: 3\n\n✅ You'll get $${botConfig.amount.otherLevel_commission.toFixed(4)} when they activate their account (Only if your account is activated).</i>`, {
+                        parse_mode: "HTML",
+                        protect_content: isProtected
+                    })
+                } catch (err) {
+                    console.log(err.message)
+                }
             }
         }
         const text = getFAQ()
@@ -327,10 +350,11 @@ api.onText(/🪂 Referral$/, async (msg) => {
         const chat = msg.chat
         if (chat.type !== "private") return
         const user = await userDB.findOne({ _id: chat.id })
+
         if(!user) return
         const invites = user.invites
-        const text = `<b><i>✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}</i>\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
-        const text1 = `✅ Every verified referral you will get $${botConfig.amount.commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
+        const text = `<b><i>✅ Every verified referral you will get reward\n\n🎚️ Level 1: $${botConfig.amount.commission.toFixed(4)}\n🎚️ Level 2: $${botConfig.amount.otherLevel_commission.toFixed(4)}\n🎚️ Level 3: $${botConfig.amount.otherLevel_commission.toFixed(4)}</i>\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: <code>${invites} Members</code>\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}</b>`
+        const text1 = `✅ Every verified referral you will get reward\n\n🎚️ Level 1: $${botConfig.amount.commission.toFixed(4)}\n🎚️ Level 2: $${botConfig.amount.otherLevel_commission.toFixed(4)}\n🎚️ Level 3: $${botConfig.amount.otherLevel_commission.toFixed(4)}\n\n🎁 Promotional reward: $${botConfig.amount.promotion}\n\n👤 You've invited: ${invites} Members\n\n🔗 Link: https://t.me/${botConfig.botName}?start=${chat.id}`
         return await api.sendMessage(chat.id, text, {
             parse_mode: "HTML",
             protect_content: isProtected,

@@ -19,6 +19,7 @@ export const botConfig = {
         deposit: 2,
         gift: 0.001,
         commission: 1,
+        otherLevel_commission: 0.01,
         withdraw: 2,
         promotion: 0.0025
     },
