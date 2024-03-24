@@ -53,16 +53,20 @@ const paymentCallback = async (req, res) => {
                                 "balance.referrals": botConfig.amount.commission
                             }
                         })
-                        if (updateUser.matchedCount == 1 && updateUser.modifiedCount == 1) {
-                            await api.sendMessage(user.invited_by, `<i>✅ Referral commission added: $${botConfig.amount.commission}</i>`, {
-                                parse_mode: "HTML",
-                                protect_content: isProtected
-                            })
-                        }
                         await api.sendMessage(userId, `<b>✅ Payment is confirmed by the network.</b>`, {
                             parse_mode: "HTML",
                             protect_content: isProtected
                         })
+                        if (updateUser.matchedCount == 1 && updateUser.modifiedCount == 1) {
+                            try {
+                                await api.sendMessage(user.invited_by, `<i>✅ Referral commission added: $${botConfig.amount.commission}</i>`, {
+                                    parse_mode: "HTML",
+                                    protect_content: isProtected
+                                })
+                            } catch (err) {
+                                console.log(err.message)
+                            }
+                        }
                     }
                 }
             } else if (postData.type === "payout") {
