@@ -63,10 +63,6 @@ const paymentCallback = async (req, res) => {
                             parse_mode: "HTML",
                             protect_content: isProtected
                         })
-                        await api.sendMessage(botConfig.payments, `<b>✅ Account activation by: ${userMention(user._id, user.username, user.first_name)}</b>`, {
-                            parse_mode: "HTML",
-                            protect_content: isProtected
-                        })
                     }
                 }
             } else if (postData.type === "payout") {
@@ -84,11 +80,6 @@ const paymentCallback = async (req, res) => {
                     })
                     if (response._id) {
                         await api.sendMessage(userId, `<b>✅ Payout is confirmed by the network.</b>`, {
-                            parse_mode: "HTML",
-                            protect_content: isProtected
-                        })
-                        const user = await userDB.findOne({ _id: userId })
-                        await api.sendMessage(botConfig.payments, `<b>✅ Completed payout of <code>$${parseFloat(postData.amount).toFixed(4)}</code> by ${userMention(user._id, user.username, user.first_name)}\n🆔 txID: <code>${postData.txID}</code></b>`, {
                             parse_mode: "HTML",
                             protect_content: isProtected
                         })

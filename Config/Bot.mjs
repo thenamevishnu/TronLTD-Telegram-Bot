@@ -8,7 +8,7 @@ export const botConfig = {
         },{
             id: -1002100467673, name: "CryptoPaidAnn"
         }, {
-            id: -1002056136099, name: "CryptoPaidLog"
+            id: -1002068312107, name: "LinkSpams"
         }
     ],
     payments: -1002056136099,
