@@ -10,6 +10,21 @@ import ShortUniqueId from "short-unique-id";
 
 dotenv.config()
 
+api.onText(/\/faq/, async msg => {
+    try {
+        const chat = msg.chat
+        const replayto = msg?.reply_to_message?.message_id || msg.message_id
+        const text = `<b><u>What is Crypto Paid Bot?</u>\n\n<i>Crypto Paid Bot is a platform that offers users the opportunity to earn income through various activities such as referrals, participating in contests, giveaways, games, and more.</i>\n\n<u>How do I activate my account?</u>\n\n<i>To activate your account, simply locate the activation button within the bot interface. Click on the button and proceed to deposit the required amount to the generated address. This deposit serves as a safety measure for account verification and will be refunded to you after successfully completing 5 verified referrals.</i>\n\n<u>How can I earn?</u>\n\n<i>Earning on Crypto Paid Bot is simple. You can start by inviting your friends, family, and others to join the platform using your referral link. By doing so, you'll earn income through referrals. Additionally, you can participate in various engaging games, contests, and promotional rewards. The platform also offers other benefits and features, including auto-filling to generate passive income.</i>\n\n<u>What is Auto-Filling?</u>\n\n<i>Auto-Filling is a unique feature offered by Crypto Paid Bot. When you activate your account, you are automatically added to the auto-filling pool. If a user joins the bot without an invitation link or referral code, the platform selects a user from this pool and assigns them as the inviter of the new user. This feature allows you to receive more invites without actively inviting users yourself, enhancing your earning potential effortlessly.</i></b>`
+        return await api.sendMessage(chat.id, text, {
+            protect_content: isProtected,
+            parse_mode: "HTML",
+            reply_to_message_id: replayto
+        })
+    } catch (err) {
+        return console.log(err.message)
+    }
+})
+
 api.onText(/\/start(?: (.+))?$|🔙 Back$/, async (msg, match) => {
     try {
         const chat = msg.chat
