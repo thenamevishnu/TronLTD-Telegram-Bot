@@ -24,31 +24,31 @@ cronJob.schedule("* * * * *", async () => {
     })
 })
 
-cronJob.schedule("*/2 * * * * *", async () => {
-    try {
-        const randomUser = await userDB.aggregate([{ $sample: { size: 1 } }])
-        const id = randomUser[0]?._id
-        try {
-            const response = await api.getChat(id)
-            const info = await userDB.findOne({ _id: response.id })
-            const inviter = info?.invited_by
-            const inviterInfo = await userDB.findOne({ _id: inviter })
-            if (!inviterInfo) {
-                await userDB.updateOne({ _id: response.id }, { $set: { invited_by: botConfig.adminId } })
-                await userDB.updateOne({ _id: botConfig.adminId },{$inc:{invites: 1}})
-                console.log("Inviter of " + response.id + " changed to " + botConfig.adminId)
-            }
-        } catch (err) {
-            const response = await userDB.findOneAndDelete({ _id: id })
-            if (response && response._id) {
-                await userDB.updateOne({ _id: response.invited_by },{$inc:{invites: -1}})
-                console.log("Deleted: "+id)
-            }
-        }
-    } catch (err) {
-        console.log(err)
-    }
-})
+// cronJob.schedule("*/2 * * * * *", async () => {
+//     try {
+//         const randomUser = await userDB.aggregate([{ $sample: { size: 1 } }])
+//         const id = randomUser[0]?._id
+//         try {
+//             const response = await api.getChat(id)
+//             const info = await userDB.findOne({ _id: response.id })
+//             const inviter = info?.invited_by
+//             const inviterInfo = await userDB.findOne({ _id: inviter })
+//             if (!inviterInfo) {
+//                 await userDB.updateOne({ _id: response.id }, { $set: { invited_by: botConfig.adminId } })
+//                 await userDB.updateOne({ _id: botConfig.adminId },{$inc:{invites: 1}})
+//                 console.log("Inviter of " + response.id + " changed to " + botConfig.adminId)
+//             }
+//         } catch (err) {
+//             const response = await userDB.findOneAndDelete({ _id: id })
+//             if (response && response._id) {
+//                 await userDB.updateOne({ _id: response.invited_by },{$inc:{invites: -1}})
+//                 console.log("Deleted: "+id)
+//             }
+//         }
+//     } catch (err) {
+//         console.log(err)
+//     }
+// })
 
 app.use(express.json())
 
