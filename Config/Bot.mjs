@@ -13,8 +13,8 @@ export const botConfig = {
         }
     ],
     payments: -1002056136099,
-    adminId: 6545728026,
-    adminName: "jsclone",
+    adminId: 6813105483,
+    adminName: "vkripz",
     amount: {
         deposit: 2,
         gift: 0.001,
